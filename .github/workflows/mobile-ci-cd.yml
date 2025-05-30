@@ -88,6 +88,9 @@ jobs:
       - name: Build Ionic app
         run: ionic build --prod
 
+      - name: Add Android platform
+        run: npx cap add android
+
       - name: Sync Capacitor
         run: npx cap sync android
 
