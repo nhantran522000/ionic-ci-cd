@@ -23,6 +23,15 @@ log.txt
 /platforms
 /plugins
 
+# Android - Include necessary config files but exclude build artifacts
+android/*/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/**/*.iml
+android/.idea/
+android/*/release/
+
 # Compiled output
 /dist
 /tmp
@@ -70,5 +79,3 @@ testem.log
 Thumbs.db
 
 .vscode
-android
-ios
