@@ -1,9 +1,16 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'ionic-ci-cd',
-  webDir: 'www'
+  // appId: com.[yourdomain].[yourappname]
+  appId: 'com.mycomp.myapp',
+  appName: 'app',
+  webDir: 'www',
+  server: {
+    androidScheme: 'https',
+  },
+  ios: {},
+  android: {},
+  plugins: {},
 };
 
 export default config;
