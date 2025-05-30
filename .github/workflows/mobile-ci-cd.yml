@@ -81,7 +81,7 @@ jobs:
           ls -la
           echo "Pnpm version:"
           pnpm --version
-          
+
           # Comprehensive lockfile verification
           if [ ! -f pnpm-lock.yaml ]; then
             echo "ERROR: pnpm-lock.yaml is missing. This will cause dependency issues."
@@ -200,44 +200,4 @@ jobs:
           echo "Release APK size: $(du -h android/app/build/outputs/apk/release/app-release-unsigned.apk | cut -f1)"
           echo "Debug APK path: android/app/build/outputs/apk/debug/app-debug.apk"
           echo "Release APK path: android/app/build/outputs/apk/release/app-release-unsigned.apk"
-
-  # Optional: Sign release APK (requires secrets)
-  sign-release-apk:
-    name: Sign Release APK
-    runs-on: ubuntu-latest
-    needs: build-android
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: Download Release APK
-        uses: actions/download-artifact@v4
-        with:
-          name: android-release-apk
-          path: ./
-
-      - name: Sign APK
-        if: env.ANDROID_KEYSTORE_BASE64 != ''
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > release.keystore
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 \
-            -keystore release.keystore \
-            -storepass "$ANDROID_KEYSTORE_PASSWORD" \
-            -keypass "$ANDROID_KEY_PASSWORD" \
-            app-release-unsigned.apk \
-            "$ANDROID_KEY_ALIAS"
-          mv app-release-unsigned.apk app-release-signed.apk
-
-      - name: Upload Signed APK
-        if: env.ANDROID_KEYSTORE_BASE64 != ''
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-release-signed-apk
-          path: app-release-signed.apk
-          retention-days: 90
+          echo "✅ APK builds completed successfully! You can download them from the artifacts section."
