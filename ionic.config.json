@@ -1,0 +1,7 @@
+{
+  "name": "ionic-ci-cd",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
