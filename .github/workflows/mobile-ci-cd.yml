@@ -46,6 +46,11 @@ jobs:
       - name: Install Ionic CLI
         run: npm install -g @ionic/cli @capacitor/cli
 
+      - name: Configure Ionic to use pnpm
+        run: |
+          ionic config set -g npmClient pnpm
+          ionic config set -g useProxyVars false
+
       - name: Build Ionic App
         run: ionic build --prod
 
@@ -64,13 +69,16 @@ jobs:
       - name: Add Android Platform (if not exists)
         run: |
           if [ ! -d "android" ]; then
-            ionic capacitor add android
+            echo "Installing Capacitor Android package..."
+            pnpm add @capacitor/android@7.2.0
+            echo "Adding Android platform..."
+            npx cap add android
           else
             echo "Android platform already exists"
           fi
 
       - name: Sync Android Platform
-        run: ionic capacitor sync android
+        run: npx cap sync android
 
       - name: Build Android APK
         run: |
