@@ -19,7 +19,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Setup Java JDK
         uses: actions/setup-java@v4
@@ -35,6 +34,12 @@ jobs:
         with:
           version: latest
 
+      - name: Setup Node.js with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
       - name: Install Dependencies
         run: pnpm install
 
@@ -44,16 +49,40 @@ jobs:
       - name: Build Ionic App
         run: ionic build --prod
 
-      - name: Add Android Platform
-        run: ionic capacitor add android
+      - name: Check build output
+        run: |
+          echo "Checking if www directory exists..."
+          ls -la
+          if [ -d "www" ]; then
+            echo "www directory found:"
+            ls -la www/
+          else
+            echo "www directory not found!"
+            exit 1
+          fi
+
+      - name: Add Android Platform (if not exists)
+        run: |
+          if [ ! -d "android" ]; then
+            ionic capacitor add android
+          else
+            echo "Android platform already exists"
+          fi
 
       - name: Sync Android Platform
         run: ionic capacitor sync android
 
       - name: Build Android APK
         run: |
+          echo "Checking android directory structure..."
+          ls -la android/
+          echo "Making gradlew executable..."
+          chmod +x android/gradlew
+          echo "Building APK..."
           cd android
           ./gradlew assembleDebug
+          echo "Checking build outputs..."
+          find . -name "*.apk" -type f
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
